@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1020"><title>NOVA Command Center</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#121a2d;--line:#26334c;--text:#e8eefc;--muted:#93a2bd;--blue:#8aa8ff;--green:#56d6a0;--amber:#ffcb70}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#1a2850 0,transparent 40%),var(--bg);color:var(--text);font:15px/1.5 system-ui,Segoe UI,sans-serif}a{color:var(--blue)}.shell{max-width:1200px;margin:auto;padding:28px 20px 48px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:26px}.brand{display:flex;align-items:center;gap:13px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#6e8cff,#a18bff);display:grid;place-items:center;color:#0b1020;font-weight:900;font-size:21px}.eyebrow{color:var(--blue);font-size:11px;letter-spacing:.18em;font-weight:800}.subtitle{color:var(--muted);margin:3px 0 0}h1{font-size:27px;margin:0}h2{font-size:16px;margin:0 0 16px}.pill{border:1px solid #735c2a;background:#302719;color:var(--amber);padding:7px 11px;border-radius:999px;font-size:12px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card,.panel{border:1px solid var(--line);border-radius:16px;background:linear-gradient(160deg,#151e33,#101728);padding:19px;min-width:0}.label{color:var(--muted);font-size:13px}.value{font-size:27px;font-weight:800;margin-top:9px;letter-spacing:-.03em}.green{color:var(--green)}.blue{color:var(--blue)}.section{margin-top:16px}.cols{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.list{display:grid;gap:12px}.item{display:flex;gap:11px;align-items:flex-start}.dot{width:9px;height:9px;flex:none;border-radius:50%;background:var(--green);margin-top:7px}.item p{margin:0}.small{font-size:13px;color:var(--muted);margin-top:3px}.progress{height:8px;border-radius:99px;background:#26334c;overflow:hidden;margin:12px 0}.bar{height:100%;width:0%;background:linear-gradient(90deg,#7190ff,#56d6a0)}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}button{border:1px solid #3a4c6e;border-radius:10px;padding:10px 13px;background:#1a2741;color:var(--text);font:inherit;font-weight:650;cursor:pointer}button:hover{background:#243657}.primary{background:#6f8cff;color:#081126;border-color:#6f8cff}.notice{padding:12px 14px;border-radius:11px;background:#1d2639;color:#c2cce0;font-size:13px;margin-top:14px}.footer{color:var(--muted);font-size:12px;text-align:center;margin-top:22px}.tag{font-size:11px;color:var(--green);border:1px solid #285a4a;border-radius:6px;padding:3px 6px}.task{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.task+.task{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cols{grid-template-columns:1fr}}@media(max-width:460px){.shell{padding:20px 13px}.grid{gap:9px}.card,.panel{padding:14px}.value{font-size:23px}h1{font-size:23px}}
+</style>
+</head>
+<body><main class="shell">
+<header class="top"><div class="brand"><div class="logo">N</div><div><div class="eyebrow">AUTONOMOUS WORKSPACE</div><h1>NOVA Command Center</h1><p class="subtitle">One place to monitor projects, tasks and verified finance.</p></div></div><span class="pill">● LOCAL AGENT NOT CONNECTED</span></header>
+<section class="grid" aria-label="Key metrics">
+<div class="card"><div class="label">Verified revenue</div><div class="value green" id="revenue">₹0.00</div><div class="small">Evidence-backed receipts only</div></div>
+<div class="card"><div class="label">First revenue goal</div><div class="value" id="goal">₹0 / ₹100</div><div class="progress"><div class="bar" id="bar"></div></div><div class="small" id="progressText">0% reached</div></div>
+<div class="card"><div class="label">Projects in this demo</div><div class="value blue">2</div><div class="small">NOVA · ClubLedger Lite</div></div>
+<div class="card"><div class="label">Upfront spend</div><div class="value">₹0.00</div><div class="small">No paid services assumed</div></div>
+</section>
+<section class="cols section">
+<div class="panel"><h2>Workspace overview</h2><div class="list">
+<div class="item"><span class="dot"></span><div><p><strong>NOVA Autonomous Workspace</strong> <span class="tag">LOCAL PROJECT</span></p><div class="small">Python agent, memory, safety policy and evidence-based finance ledger.</div></div></div>
+<div class="item"><span class="dot"></span><div><p><strong>ClubLedger Lite</strong> <span class="tag">PROTOTYPE</span></p><div class="small">Offline-first student-club income/expense tracker with CSV export and JSON backup.</div></div></div>
+<div class="item"><span class="dot" style="background:var(--amber)"></span><div><p><strong>Customer validation</strong></p><div class="small">Target: 5 real conversations before deciding to launch. No outreach has been sent by this demo.</div></div></div>
+</div><div class="notice">This is a static public dashboard preview. It does not connect to your laptop, run NOVA, or fetch live data. Values shown are demo defaults, not a live feed.</div></div>
+<div class="panel"><h2>Next milestones</h2>
+<div class="task"><div><strong>1. Browser QA</strong><div class="small">Test the app in a real browser and verify edge cases.</div></div><span class="tag">NEXT</span></div>
+<div class="task"><div><strong>2. Validate demand</strong><div class="small">Ask five student-club finance managers about their current workflow.</div></div><span class="tag">PENDING</span></div>
+<div class="task"><div><strong>3. Confirm payout route</strong><div class="small">Verify seller eligibility and fees before opening a storefront.</div></div><span class="tag">PENDING</span></div>
+<div class="actions"><button class="primary" id="refresh">Refresh preview</button><button id="finance">View finance rules</button></div><p class="small" id="message" role="status" aria-live="polite"></p>
+</div></section>
+<div class="footer">NOVA Command Center · Static preview · No credentials or payment identifiers are included.</div>
+</main><script>
+document.getElementById('refresh').addEventListener('click',()=>{document.getElementById('message').textContent='Preview refreshed. This page is not connected to the local NOVA runtime.'});
+document.getElementById('finance').addEventListener('click',()=>{document.getElementById('message').textContent='Only verified receipts with evidence count as revenue. Owner funding is tracked separately. No payments can be initiated from this page.'});
+</script></body></html>
