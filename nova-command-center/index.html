@@ -10,12 +10,23 @@
 </style>
 </head>
 <body><main class="shell">
-<header class="top"><div class="brand"><div class="logo">N</div><div><div class="eyebrow">AUTONOMOUS WORKSPACE</div><h1>NOVA Command Center</h1><p class="subtitle">One place to monitor projects, tasks and verified finance.</p></div></div><span class="pill">● LOCAL AGENT NOT CONNECTED</span></header>
+<header class="top"><div class="brand"><div class="logo">N</div><div><div class="eyebrow">AUTONOMOUS WORKSPACE</div><h1>NOVA Command Center</h1><p class="subtitle">One place to monitor projects, tasks and verified finance.</p></div></div><span class="pill" id="bridgeStatus">● LOCAL BRIDGE NOT CONNECTED</span></header>
 <section class="grid" aria-label="Key metrics">
 <div class="card"><div class="label">Verified revenue</div><div class="value green" id="revenue">₹0.00</div><div class="small">Evidence-backed receipts only</div></div>
 <div class="card"><div class="label">First revenue goal</div><div class="value" id="goal">₹0 / ₹100</div><div class="progress"><div class="bar" id="bar"></div></div><div class="small" id="progressText">0% reached</div></div>
 <div class="card"><div class="label">Projects in this demo</div><div class="value blue">2</div><div class="small">NOVA · ClubLedger Lite</div></div>
 <div class="card"><div class="label">Upfront spend</div><div class="value">₹0.00</div><div class="small">No paid services assumed</div></div>
+</section>
+<section class="panel section" aria-labelledby="bridgeHeading">
+<h2 id="bridgeHeading">Local NOVA connection</h2>
+<p class="small">Connect this browser to the read-only bridge running on this same PC. Your token stays in this page's memory and is not saved.</p>
+<div class="actions" style="align-items:center">
+<input id="bridgeToken" type="password" autocomplete="off" placeholder="Paste local bridge token" aria-label="Local bridge token" style="flex:1;min-width:220px;padding:10px 12px;border-radius:9px;border:1px solid #3a4c6e;background:#0d1425;color:var(--text)">
+<button class="primary" id="connectBridge">Connect</button>
+<button id="disconnectBridge">Disconnect</button>
+</div>
+<p class="small" id="bridgeMessage" role="status" aria-live="polite">Not connected. Start dashboard_bridge.py on this PC first.</p>
+<div class="small" id="bridgeDetails">Live data is unavailable until you connect.</div>
 </section>
 <section class="cols section">
 <div class="panel"><h2>Workspace overview</h2><div class="list">
@@ -31,6 +42,68 @@
 </div></section>
 <div class="footer">NOVA Command Center · Static preview · No credentials or payment identifiers are included.</div>
 </main><script>
-document.getElementById('refresh').addEventListener('click',()=>{document.getElementById('message').textContent='Preview refreshed. This page is not connected to the local NOVA runtime.'});
-document.getElementById('finance').addEventListener('click',()=>{document.getElementById('message').textContent='Only verified receipts with evidence count as revenue. Owner funding is tracked separately. No payments can be initiated from this page.'});
+let bridgeToken = '';
+let bridgeTimer = null;
+const byId = (id) => document.getElementById(id);
+const money = (paise) => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR'}).format(paise / 100);
+function showBridgeError(message) {
+  byId('bridgeStatus').textContent = '● LOCAL BRIDGE NOT CONNECTED';
+  byId('bridgeMessage').textContent = message;
+}
+async function fetchBridgeStatus() {
+  if (!bridgeToken) return;
+  try {
+    const response = await fetch('http://127.0.0.1:8765/api/status', {
+      method: 'GET',
+      headers: { 'Authorization': 'Bearer ' + bridgeToken },
+      cache: 'no-store'
+    });
+    if (!response.ok) throw new Error(response.status === 401 ? 'Token rejected. Paste the token from the currently running bridge.' : 'Bridge returned HTTP ' + response.status);
+    const data = await response.json();
+    if (!data.ok || data.bridge !== 'online') throw new Error('Unexpected bridge response.');
+    byId('bridgeStatus').textContent = '● LOCAL BRIDGE CONNECTED';
+    byId('bridgeMessage').textContent = 'Connected · last checked ' + new Date(data.checked_at).toLocaleTimeString();
+    const ledger = data.ledger || {};
+    if (ledger.available) {
+      const income = ledger.verified_income_paise;
+      byId('revenue').textContent = money(income);
+      byId('goal').textContent = money(Math.min(income,10000)) + ' / ₹100.00';
+      byId('bar').style.width = (Math.min(income,10000)/10000*100) + '%';
+      byId('progressText').textContent = Math.floor(Math.min(income,10000)/100) + '% reached · verified receipts only';
+      byId('bridgeDetails').textContent = data.host + ' ' + data.host_release + ' · Python ' + data.python + ' · bridge uptime ' + data.uptime_seconds + 's · verified expenses ' + money(ledger.verified_expense_paise) + ' · owner funding ' + money(ledger.verified_owner_funding_paise) + '. Runtime process state is not yet detected.';
+    } else {
+      byId('revenue').textContent = '—';
+      byId('goal').textContent = '— / ₹100.00';
+      byId('bar').style.width = '0%';
+      byId('progressText').textContent = 'Ledger unavailable; not reported as zero';
+      byId('bridgeDetails').textContent = data.host + ' · Python ' + data.python + ' · ' + (ledger.reason || 'Ledger unavailable') + '. Runtime process state is not yet detected.';
+    }
+  } catch (error) {
+    showBridgeError(error.message + ' If the browser blocks localhost access, do not disable security; share the exact console error.');
+  }
+}
+byId('connectBridge').addEventListener('click', async () => {
+  bridgeToken = byId('bridgeToken').value.trim();
+  if (!bridgeToken) { showBridgeError('Paste the token printed by dashboard_bridge.py first.'); return; }
+  await fetchBridgeStatus();
+  if (bridgeTimer) clearInterval(bridgeTimer);
+  bridgeTimer = setInterval(fetchBridgeStatus, 15000);
+});
+byId('disconnectBridge').addEventListener('click', () => {
+  bridgeToken = '';
+  if (bridgeTimer) clearInterval(bridgeTimer);
+  bridgeTimer = null;
+  byId('bridgeToken').value = '';
+  byId('revenue').textContent = '—';
+  byId('goal').textContent = '— / ₹100.00';
+  byId('bar').style.width = '0%';
+  byId('progressText').textContent = 'Disconnected · live values cleared';
+  byId('bridgeDetails').textContent = 'Live data is unavailable until you connect.';
+  showBridgeError('Disconnected. Token cleared from page memory.');
+});
+byId('refresh').addEventListener('click', async () => {
+  byId('message').textContent = bridgeToken ? 'Refreshing live status…' : 'Preview refreshed. Connect the local bridge to show live values.';
+  if (bridgeToken) await fetchBridgeStatus();
+});
+byId('finance').addEventListener('click',()=>{byId('message').textContent='Only verified receipts with evidence count as revenue. Owner funding is tracked separately. This dashboard cannot write finance records or initiate payments.'});
 </script></body></html>
